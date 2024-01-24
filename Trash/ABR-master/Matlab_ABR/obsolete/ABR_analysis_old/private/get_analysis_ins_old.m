@@ -1,2 +1,0 @@
-%ABR Analysis Instruction Block
-
