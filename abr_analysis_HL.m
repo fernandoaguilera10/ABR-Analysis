@@ -8,7 +8,7 @@ function abr_analysis_HL(command_str,parm_num)
 
 global paramsIN abr_FIG abr_Stimuli abr_root_dir abr_data_dir hearingStatus animal data ...
     han invert abr_out_dir freq date dataFolderpath viewraw temp_view cur_data q_fldr check_files ...
-    replot_check ChinFile
+    replot_check
 disp('in abr_analysis_HL.m')
 
 % abr_root_dir, abr_data_dir, abr_out_dir must be set in abr_setup, and
@@ -45,6 +45,9 @@ if nargin < 1
     set(abr_FIG.dir_txt,'string',abr_Stimuli.dir,'Color',[0.4660 0.6740 0.1880]);
     
     if strcmp(get(han.abr_panel,'Box'),'off')
+        animal_idx = strfind(abr_Stimuli.dir,"Q");
+        animal = abr_Stimuli.dir(animal_idx+1:animal_idx+3);
+        
         paramsIN.animal= animal;
         if contains(lower(abr_Stimuli.dir), {'nh', 'pre'})
             hearingStatus = 'NH';
@@ -145,6 +148,9 @@ elseif strcmp(command_str,'directory')
     set(abr_FIG.dir_txt,'string',abr_Stimuli.dir,'Color',[0.4660 0.6740 0.1880]);
     
     if strcmp(get(han.abr_panel,'Box'),'off')
+        animal_idx = strfind(abr_Stimuli.dir,"Q");
+        animal = abr_Stimuli.dir(animal_idx+1:animal_idx+3);
+        
         paramsIN.animal= animal;
         if contains(lower(abr_Stimuli.dir), {'nh', 'pre'})
             hearingStatus = 'NH';
@@ -311,20 +317,52 @@ elseif strcmp(command_str,'trou5')
 
 %PRINT
 elseif strcmp(command_str,'print')
-    set(gcf,'PaperOrientation','portrait');   
-    cd(abr_out_dir)
-    if freq~=0 %HG EDITED 9/30/19
-        fName= strrep(horzcat('Q',animal, '_',num2str(freq),'Hz_',ChinFile,'_',date), '-', '_');
+    set(gcf,'PaperOrientation','portrait');
+    %curChinDir= strrep(strcat(abr_out_dir, 'Q',num2str(animal),'_',hearingStatus,'_',date, filesep), '-', '_');
+   
+    %HG ADDED 9/30/19
+    date=abr_Stimuli.dir(4:13);
+    
+    q_fldr = strcat('Q', num2str(animal));
+    if strcmp('pre',regexp(abr_Stimuli.dir,'pre','match')) == 1
+        type = 'pre';
+    elseif strcmp('post',regexp(abr_Stimuli.dir,'post','match')) == 1
+        type = 'post';
     else
-        fName= strrep(horzcat('Q',animal, '_Click_',ChinFile,'_',date), '-', '_');
+        type = 'none';
     end
-
+    ChinDir = strcat(abr_out_dir, q_fldr, filesep, type, filesep);
+    
+    if ~isdir(ChinDir)
+        mkdir(ChinDir);
+    end
+    cd(ChinDir)
+    
+    x = dir;
+    fldr = "";
+    for i = 1:length(x)
+        if (~contains(x(i).name,'.'))&&(~contains(x(i).name,'.DS_Store','IgnoreCase',true))
+            fldr = x(i).name;
+        end
+    end
+    currChinDir = strcat(ChinDir, fldr);
+    cd(currChinDir)
+    
+    if freq~=0 %HG EDITED 9/30/19
+        fName= strrep(horzcat('Q',num2str(animal),'_',hearingStatus,'_', num2str(freq), 'Hz','_',date), '-', '_');
+    else
+        fName= strrep(horzcat('Q',num2str(animal),'_',hearingStatus,'_', 'click','_',date), '-', '_');
+    end
+    
     %Save tiff figure
     saveas(gcf, fName, 'tiff');
     
     %HG ADDED 9/30/19
     %Notifying tiff figure was saved -- from save_file2_HG.m
-    uiwait(msgbox(sprintf('File Saved: %s',fName)))
+    filename = strcat('Q',num2str(animal),'_',hearingStatus,'_',date);
+    figure(22); set(gcf,'Units','normalized','Position',[0.5 0.5 0.2 0.1])
+    text(0,0,['File printed as tiff:' filename])
+    axis off; pause(0.5); close(22);
 
 %SAVE -- pressing push button "Save as File"
 elseif strcmp(command_str,'file')

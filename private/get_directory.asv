@@ -86,15 +86,16 @@ str = FolderofInterest;
 %str = unique(str);
 
 %% User chooses folder from list
-d = dir(abr_data_dir);
-d = d([d.isdir]==1 & strncmp('.',{d.name},1)==0); % Only directories which are not '.' nor '..'
-str = {d.name};
+%OLD CODE BELOW
+%d = dir(abr_data_dir);
+%d = d([d.isdir]==1 & strncmp('.',{d.name},1)==0); % Only directories which are not '.' nor '..'
+%str = {d.name};
 [selection, ok] = listdlg('Name', 'File Manager', ...
     'PromptString',   'Select an Existing Data Directory:',...
     'SelectionMode',  'single',...
     'ListSize',       [300,300], ...
     'OKString',       'Re-Activate', ...
-    'CancelString',   'Exit', ...
+    'CancelString',   'Create new Directory', ...
     'InitialValue',    1, ...
     'ListString',      str);
 drawnow; %updates figures/graphics immediately
@@ -188,7 +189,7 @@ else
 end
 
 %% Go back to data directory to: 1) check for extra calibs, 2) do artifact correction
-if exist(dataFolderpath,'dir')
+if ~exist(dataFolderpath,'dir')
     cd (dataFolderpath)
 end
         
@@ -200,7 +201,7 @@ if length(calibPICs) > 1
         'PromptString',{'Please, select one calibration file to use.',''},...
         'ListSize',       [300,300], ...
         'SelectionMode','single','ListString',fn);
-    abr_Stimuli.cal_pic = sscanf(fn{calib_idx},'p%d_');
+    abr_Stimuli.cal_pic = calib_idx;
     set(abr_FIG.parm_txt(1),'string',calibPICs(calib_idx).name,'Interpreter','none','Color',[0.4660 0.6740 0.1880]);
 end
 if isempty(calibPICs)

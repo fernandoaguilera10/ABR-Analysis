@@ -24,7 +24,7 @@ global abr_root_dir abr_data_dir abr_out_dir animal ChinCondition ChinFile
 rmpath(genpath('Trash'));
 animal = ChinID(2:end);
 addpath(genpath(PROJdir))
-abr_root_dir = PROJdir; % path of the directory containing your 'ABRAnalysis' folder
+abr_root_dir = pwd; % path of the directory containing your 'ABRAnalysis' folder
 abr_out_dir = [PROJdir strcat(filesep,'Analysis',filesep,'ABR',filesep,ChinID,filesep,ChinCondition,filesep,ChinFile)];
 addpath(abr_root_dir)
 if ~exist(abr_out_dir,'dir')

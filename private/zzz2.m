@@ -108,37 +108,8 @@ abr=resample(abr3,2,1); %double sampling frequency of ABRs
 freq_mean=mean(freqs); freq=round(freqs(1,1)/500)*500; %round to nearest 500 Hz
 abr_time=(0:dt:time_of_bin(length(abr)));
 
-%Determine SPL of stimuli
-% clickmarker = 0;
-% command_line = sprintf('%s%s%c','[xcal]=',CalibFile,';');
-
-
-
-% CalibFile  = sprintf('p%04d_calib', str2num(abr_Stimuli.cal_pic));
-% searchstr = [CalibFile,'*'];
-% CalibFile = {dir(fullfile(cd,searchstr)).name};
-% CalibFile = CalibFile{1};
-% 
-% command_line = sprintf('%s%s%c','[xcal]=',CalibFile(1:end-2),';');
-% 
-% eval(command_line);
-% 
-% if isequaln(freq_mean,NaN)
-%     freq_mean = 1000; %for next calculation
-%     clickmarker = 1;
-% end
-% freq_loc = find(xcal.CalibData(:,1)>=(freq_mean/1000)); %What is this doing?
-% freq_level = xcal.CalibData(freq_loc(1),2); %%%HERE!!
-
-% AS - find the right calib file, whether or not it says raw or not
-% Should verify user knows to pick inv calib!!
-% make this better..should just be able to use loadpic or something
-% I made this a function since it's done in another place.
-
 [freq_level, clickmarker] = getMaxdBSPL(abr_Stimuli.cal_pic,freq);
 spl2=freq_level+attn;
-
-
 
 %Only look at abrs below maxdBtoanalyze
 ABRcounter = 1;
