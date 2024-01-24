@@ -1,31 +1,33 @@
-function abr_setup
-
-global abr_root_dir abr_data_dir abr_out_dir 
-
-addpath(genpath(pwd)) %ENTER the path of the directory containing your 'ABRAnalysis' folder
+%% Data formatting - see Y:\Projects\___Project_Name_TEMPLATE
+% 3 folders in project directory
+% Analysis - 3 subfolders with experiment type (e.g. ABR, EFR, MEMR, OAE)
+% Code Archive - 3 subfolders with experiment type (e.g. ABR, EFR, MEMR, OAE)
+% Data - individual data folders with subject ID (e.g. Q123)
+%% Animal ID
+ChinID = 'Q445';
+ChinCondition = 'pre';
+ChinFile = 'Baseline_2'; 
+%% Directories
+% PROJdir = directory containing project folder
+% abr_data_dir = directory containing data folder
+if (ismac == 1) %MAC computer
+    %PROJdir = strcat(filesep,'Volumes',filesep,'Heinz-Lab',filesep,'Projects',filesep,'DOD',filesep,'Pilot Study');
+    %abr_data_dir = strcat(PROJdir,filesep,'Data',filesep,ChinID,filesep,'ABR',filesep,ChinCondition);
+    PROJdir = strcat(filesep,'Users',filesep,'fernandoaguileradealba',filesep,'Desktop',filesep,'DOD_Analysis_GIT');
+    abr_data_dir = strcat(PROJdir,filesep,'Data',filesep,ChinID,filesep,'ABR',filesep,ChinCondition);
+else %if using WINDOWS computer..
+    PROJdir = strcat('Y:',filesep,'Projects',filesep,'DOD',filesep,'Pilot Study');
+    abr_data_dir = strcat(PROJdir,filesep,'Data',filesep,ChinID,filesep,'ABR',filesep,ChinCondition);
+end
+%% Function
+global abr_root_dir abr_data_dir abr_out_dir animal ChinCondition ChinFile
 rmpath(genpath('Trash'));
-
-%linux
-addpath(genpath('/media/sivaprakasaman/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/')) %ENTER the path of the directory containing your project folder
-project_DIR='/media/sivaprakasaman/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/Baseline/'; %ENTER the path of your project folder
-
-% %windows
-% addpath(genpath('A:/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/')) %ENTER the path of the directory containing your project folder
-% project_DIR='A:/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/Baseline/'; %ENTER the path of your project folder
-
-% code_DIR=[pwd,'/']; %ENTER the path of your 'ABRAnalysis' folder
-code_DIR = pwd;
-abr_root_dir = [code_DIR];
-abr_data_dir = [project_DIR];
-abr_out_dir = [project_DIR 'Analysis'];
-
-addpath([abr_root_dir])
-
+animal = ChinID(2:end);
+addpath(genpath(PROJdir))
+abr_root_dir = PROJdir; % path of the directory containing your 'ABRAnalysis' folder
+abr_out_dir = [PROJdir strcat(filesep,'Analysis',filesep,'ABR',filesep,ChinID,filesep,ChinCondition,filesep,ChinFile)];
+addpath(abr_root_dir)
 if ~exist(abr_out_dir,'dir')
     mkdir(abr_out_dir);
 end
-
-% cd([abr_root_dir 'ABR_analysis/'])
-
-abr_analysis_HL
-
+abr_analysis_HL;
