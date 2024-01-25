@@ -18,7 +18,7 @@ if (ismac == 1) %MAC computer
 else %if using WINDOWS computer..
 %     PROJdir = strcat('Y:',filesep,'Projects',filesep,'DOD',filesep,'Pilot Study');
 %     abr_data_dir = strcat(PROJdir,filesep,'Data',filesep,ChinID,filesep,'ABR',filesep,ChinCondition);
-    PROJdir = strcat('C:',filesep,'Users',filesep,'aguilerl',filesep,'OneDrive - purdue.edu',filesep,'Desktop',filesep,'DOD-offline');
+    PROJdir = strcat('C:',filesep,'Users',filesep,'aguilerl',filesep,'OneDrive - purdue.edu',filesep,'Desktop',filesep,'ABR-Analysis');
     abr_data_dir = strcat(PROJdir,filesep,'Data',filesep,ChinID,filesep,'ABR',filesep,ChinCondition);
 end
 %% Function

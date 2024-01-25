@@ -11,7 +11,7 @@ INSTRUCTIONS:
 ABR code once you clone it from GitHub
 
 2) Clone the repository onto your designated folder. Open the terminal at the designated directory and type the following command:
-     git clone https://github.com/HeinzLabPurdue/ABRanalysis
+     git clone https://github.com/fernandoaguilera10/ABR-Analysis.git
 
 4) Once the code is cloned, you should see a folder named "ABRanalysis" within the folder you chose initially.
 
