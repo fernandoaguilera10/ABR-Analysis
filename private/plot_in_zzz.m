@@ -3,7 +3,7 @@
 function plot_in_zzz(abr_xx2,delay_of_max)
 
 global abr_Stimuli num dt line_width abr freq spl upper_y_bound lower_y_bound padvoltage ...
-    y_shift date data han animal thresh_mag ABRmag AR_marker
+    y_shift date date_abr data han animal thresh_mag ABRmag AR_marker
 
 %% some variables for plotting abrs in abr_panel
 pp_amp=zeros(1,num);
@@ -100,7 +100,8 @@ if freq~=0
 else
     text(0.24,0.9375,['Click'],'FontSize',14,'horizontalalignment','left','VerticalAlignment','bottom');
 end
-text(0.04,0.9375,['Q' num2str(animal) ' on ' char(strrep(date,'_','-'))],'FontSize',14,'horizontalalignment','left','VerticalAlignment','bottom');
+date_abr = date;
+text(0.04,0.9375,['Q' num2str(animal) ' on ' char(strrep(date_abr,'_','-'))],'FontSize',14,'horizontalalignment','left','VerticalAlignment','bottom');
 
 %RESET AR_marker because new frequency button pressed
 AR_marker = 0;

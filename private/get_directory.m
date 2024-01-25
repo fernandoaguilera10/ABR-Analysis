@@ -1,6 +1,6 @@
 function dirname = get_directory
 
-global abr_data_dir abr_Stimuli han latcomp dataFolderpath abr_out_dir han viewraw dimcheck freqUsed abr_FIG 
+global abr_data_dir abr_Stimuli han latcomp dataFolderpath abr_out_dir han viewraw dimcheck freqUsed abr_FIG
 
 %% Reset checkbox to unchecked when loading new directory
 dimcheck = 0;
@@ -11,75 +11,14 @@ set(han.viewraw,'Value',0);
 %HG added 10/17 -- grab data from DATA folder
 %d = dir(abr_data_dir);
 cd(abr_data_dir)
-folderNum = 1; %counter for FOLDER array, put this where???
-
-% Doing away with this
-% answer = questdlg('Are your data folders correctly formatted?',...
-%                 'Data Format', 'Yes', 'No', 'I dont know');
-
-%assert No for now, clean up asap
-answer = 'No';
-            
-    if contains(answer, 'Yes')
-        formatCorrect = true;
-%         set(abr_FIG.push.peaks,'Enable','on');
-        Qfolders = dir('Q*');
-        Qfolders_pwd = pwd;
-        for q = 1:length(Qfolders)
-            cd(Qfolders(q).name);
-            %First enter ABR
-            cd('ABR');
-            ABR_dir = pwd;
-            %Grab pre folder
-            cd('pre');
-            preFolders = dir;
-            foldersDIR_pre = pwd;
-            for pre = 1:length(preFolders)
-                if ~contains(preFolders(pre).name, '.') %IMPROVE???
-                    cd(preFolders(pre).name);
-                    %Locate folder in directory
-                    potentialFolders = dir;
-                    for num1 = 1:length(potentialFolders)
-                        %first: find all folders with 'Q' in name
-                        if (~contains(potentialFolders(num1).name,'.') && ~contains(potentialFolders(num1).name,'.mat'))
-                            FolderofInterest{folderNum} = potentialFolders(num1).name;
-                            folderNum = folderNum + 1;
-                        end
-                     end
-                end  
-                cd(foldersDIR_pre);
-            end
-            cd(ABR_dir);
-            %Repeat with post
-            cd('post');
-            postFolders = dir;
-            foldersDIR_post = pwd;
-            for post = 1:length(postFolders)
-                if ~contains(postFolders(post).name, '.') %IMPROVE???
-                    cd(postFolders(post).name);
-                    %Locate folder in directory
-                    potentialFolders = dir;
-                    for num2 = 1:length(potentialFolders)
-                        %first: find all folders with 'Q' in name
-                        if (~contains(potentialFolders(num2).name,'.') && ~contains(potentialFolders(num2).name,'.mat'))
-                            FolderofInterest{folderNum} = potentialFolders(num2).name;
-                            folderNum = folderNum + 1;
-                        end
-                     end
-                end  
-                cd(foldersDIR_post);
-            end
-            cd(Qfolders_pwd);
-        end
-    else
-        formatCorrect = false;
+folderNum = 1;
+formatCorrect = false;
 %         set(abr_FIG.push.peaks,'Enable','off');
-        folders = dir;
-        for num = 1:length(folders)
-            FolderofInterest{folderNum} = folders(num).name;
-            folderNum = folderNum + 1;
-        end
-    end
+folders = dir;
+for num = 1:length(folders)
+    FolderofInterest{folderNum} = folders(num).name;
+    folderNum = folderNum + 1;
+end
 str = FolderofInterest;
 
 %HG added 2/4/20 -- removes duplicate folders, if any
@@ -114,11 +53,11 @@ end
 if (formatCorrect == 1)
     %First determine animal number
     Qlocation_start = strfind(dirname,'Q');
-
+    
     %Assuming number is 3 digits
     Qlocation_end = Qlocation_start+3;
     Qnumber = dirname(Qlocation_start:Qlocation_end);
-
+    
     Qfolders_pwd = pwd;
     cd(Qnumber);
     %cd('Q403');
@@ -133,26 +72,26 @@ if (formatCorrect == 1)
             preFolders = dir;
             foldersDIR_pre = pwd;
             for pre2 = 1:length(preFolders)
-                if ~contains(preFolders(pre2).name, '.') 
+                if ~contains(preFolders(pre2).name, '.')
                     cd(preFolders(pre2).name);
                     %HG ADDED 1/17/20
                     checkforFolder = dir;
                     for ppp = 1:length(checkforFolder)
                         if contains(checkforFolder(ppp).name,dirname)
                             %if exist(dirname)
-                                %Load data from here!!!!
-                                %fprintf('DATA FOUND\n');
-                                marker = 1;
-                                cd(dirname);
-                                dataFolderpath = pwd;
-                                break; %exit loops because location was found
+                            %Load data from here!!!!
+                            %fprintf('DATA FOUND\n');
+                            marker = 1;
+                            cd(dirname);
+                            dataFolderpath = pwd;
+                            break; %exit loops because location was found
                         end
                     end
-                cd(foldersDIR_pre);
+                    cd(foldersDIR_pre);
                 end
             end
             if (marker == 1)
-               break; %exits main loop too, doesn't check post 
+                break; %exits main loop too, doesn't check post
             end
         else %NEXT POST
             cd(Qfolders_pwd);
@@ -162,7 +101,7 @@ if (formatCorrect == 1)
             postFolders = dir;
             foldersDIR_post = pwd;
             for post2 = 1:length(postFolders)
-                if ~contains(postFolders(post2).name, '.') 
+                if ~contains(postFolders(post2).name, '.')
                     cd(postFolders(post2).name);
                     %HG ADDED 1/17/20
                     checkforFolder = dir;
@@ -171,31 +110,31 @@ if (formatCorrect == 1)
                             %if exist(dirname)
                             %Load data from here!!!!
                             %fprintf('DATA FOUND\n');
-                             marker = 1;
-                             cd(dirname);
-                             dataFolderpath = pwd;
+                            marker = 1;
+                            cd(dirname);
+                            dataFolderpath = pwd;
                             break; %exit loops because location was found
                         end
                     end
                     cd(foldersDIR_post);
                 end
-            end  
+            end
         end
     end
-CURdir=pwd; 
+    CURdir=pwd;
 else
-    dataFolderpath = [pwd '/' dirname];
+    dataFolderpath = [pwd filesep dirname];
 end
 
 %% Go back to data directory to: 1) check for extra calibs, 2) do artifact correction
 if exist(dataFolderpath,'dir')
     cd (dataFolderpath)
 end
-        
+
 %% Warn if more than one calib file, if so list pics (Commented out 10/5/21 due to missing findPics, will comment back later)
-calibPICs = dir('*calib*.m');
+calibPICs = dir('*calib_inv*.m');
+fn = {calibPICs.name};
 if length(calibPICs) > 1
-    fn = {calibPICs.name};
     [calib_idx,ok] = listdlg('Name', 'Calibration File Manager', ...
         'PromptString',{'Please, select one calibration file to use.',''},...
         'ListSize',       [300,300], ...
@@ -203,11 +142,15 @@ if length(calibPICs) > 1
     abr_Stimuli.cal_pic = sscanf(fn{calib_idx},'p%d_');
     set(abr_FIG.parm_txt(1),'string',calibPICs(calib_idx).name,'Interpreter','none','Color',[0.4660 0.6740 0.1880]);
 end
+if length(calibPICs) == 1
+    abr_Stimuli.cal_pic = sscanf(fn{1},'p%d_');
+    set(abr_FIG.parm_txt(1),'string',calibPICs(1).name,'Interpreter','none','Color',[0.4660 0.6740 0.1880]);
+end
 if isempty(calibPICs)
-	mydlg=warndlg('No Calibration Files Detected. Please Make Sure To Include One Within The Selected Directory or Select a New Directory','Calibration Files');
-	waitfor(mydlg)
+    mydlg=warndlg('No Calibration Files Detected. Please Make Sure To Include One Within The Selected Directory or Select a New Directory','Calibration Files');
+    waitfor(mydlg)
     set(abr_FIG.parm_txt(1),'string','Select Calibration','Interpreter','none','Color','r');
-
+    
 end
 
 
@@ -271,16 +214,16 @@ if isempty(TEMPdir)
     else
         return;
     end
-%     load(a_files_all(1.name);
-%     x = ans;
+    %     load(a_files_all(1.name);
+    %     x = ans;
     %AR_marker = x.AR_marker;
     %If AR_marker does not exist, call artifact rejection
     %if ~exist('AR_marker','var')
     if ~isfield(x,'AR_marker')
         %Call AR if no araw files exist AND AR_marker does not exist
         %Only calls abr_artifact_rejection if AR needs to be performed
-        abr_artifact_rejection;    
-    else %tell user that previous user indicated that AR does not need to be performed 
+        abr_artifact_rejection;
+    else %tell user that previous user indicated that AR does not need to be performed
         uiwait(warndlg('A previous user has indicated that AR does not need to be performed on this data set.','Artifact Correction NOT NECESSARY','modal'));
         %AFTER FIRST GO-AROUND - data has already been processed
         %Unable "view raw data" checkbox - because AC doesnt exist

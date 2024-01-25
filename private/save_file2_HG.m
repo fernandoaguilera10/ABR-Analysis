@@ -1,35 +1,25 @@
 function save_file2_HG
 
 global num freq spl animal date freq_level data abr ABRmag w hearingStatus abr_out_dir abr_Stimuli ...
-    AR_marker abr_time abr_FIG
+    AR_marker abr_time abr_FIG ChinCondition ChinFile ChinID date_abr today_date
+
 today = datetime('now');
 today_date = datestr(today);
-today_date = today_date(1:11);
-q_fldr = strcat('Q', num2str(animal));
-ChinDir = [abr_out_dir,'/', q_fldr];
-
-if ~isdir(ChinDir)
-    mkdir(ChinDir);
-end
+today_date = [today_date(1:2), today_date(4:6), today_date(8:11)];
+ChinDir = abr_out_dir;
 cd(ChinDir)
-x = dir;
-for i = 1:length(x)
-    if (~contains(x(i).name,'.'))&&(~contains(x(i).name,'.DS_Store','IgnoreCase',true))
-        fldr = x(i).name;
-    else
-        fldr = '';
-    end
+if freq~=0
+    file_check = dir(sprintf('*Q%s_%s_%s_%dHz*.mat',num2str(animal),ChinCondition,ChinFile,freq));
+else
+    file_check = dir(sprintf('*Q%s_%s_%s_click*.mat',num2str(animal),ChinCondition,ChinFile));
 end
-currChinDir = strcat(ChinDir, fldr);
-cd(currChinDir)
-file_check = dir(sprintf('*Q%s_%s_%dHz_%s*.mat',num2str(animal),hearingStatus,freq,date));
 filename = {file_check.name};
 %HG ADDED 9/30/19
 %Make sure saving is done in correct folder
 if freq~=0 %HG EDITED 9/30/19
-    filename2= strrep(horzcat('Q',num2str(animal),'_',hearingStatus,'_', num2str(freq), 'Hz','_',date), '-', '_');
+    filename2= strrep(horzcat(ChinID,'_',num2str(freq), 'Hz','_',ChinFile,'_',today_date), '-', '_');
 else
-    filename2= strrep(horzcat('Q',num2str(animal),'_',hearingStatus,'_', 'click','_',date), '-', '_');
+    filename2= strrep(horzcat(ChinID,'_','Click','_',ChinFile,'_',today_date), '-', '_');
 end
 freq2=ones(1,num)*freq; replaced=0;
 if ~isempty(filename) && ~isempty(abr_FIG.parm_txt(9).String) % Replace file contents if file exists and is active
@@ -78,10 +68,11 @@ if ~isempty(filename) && ~isempty(abr_FIG.parm_txt(9).String) % Replace file con
                 abrs.plot.levels = abrs.x(:,2);
                 abrs.plot.peaks = ["p1" "n1" "p2" "n2" "p3" "n3" "p4" "n4" "p5" "n5"];
                 abrs.plot.freq = abrs.x(1,1);
+                abrs.plot.threshold = data.threshold;
+                abrs.plot.levels = spl';
                 %HG ADDED 2/11/20
                 abrs.AR_marker = AR_marker;
-                idx = strfind(abr_FIG.parm_txt(9).String,'.mat');
-                filename_out = [abr_FIG.parm_txt(9).String(1:idx-12-1) '_' today_date];
+                filename_out = abr_FIG.parm_txt(9).String;
                 save(filename_out, 'abrs','-append'); clear abrs;
             else
                 abrs.thresholds = [freq data.threshold data.amp_thresh -freq_level];
@@ -99,9 +90,11 @@ if ~isempty(filename) && ~isempty(abr_FIG.parm_txt(9).String) % Replace file con
                 abrs.plot.levels = abrs.x(:,2);
                 abrs.plot.peaks = ["p1" "n1" "p2" "n2" "p3" "n3" "p4" "n4" "p5" "n5"];
                 abrs.plot.freq = abrs.x(1,1);
+                abrs.plot.threshold = data.threshold;
+                abrs.plot.levels = spl';
                 abrs.AR_marker = AR_marker;
                 idx = strfind(abr_FIG.parm_txt(9).String,'.mat');
-                filename_out = [abr_FIG.parm_txt(9).String(1:idx-12-1) '_' today_date];
+                filename_out = [abr_FIG.parm_txt(9).String(1:idx-12-1)];
                 save(filename_out, 'abrs','-append'); clear abrs;
                 save(filename2, 'abrs','-append'); clear abrs;
             end
@@ -125,6 +118,8 @@ if ~isempty(filename) && ~isempty(abr_FIG.parm_txt(9).String) % Replace file con
             abrs.plot.levels = abrs.x(:,2);
             abrs.plot.peaks = ["p1" "n1" "p2" "n2" "p3" "n3" "p4" "n4" "p5" "n5"];
             abrs.plot.freq = abrs.x(1,1);
+            abrs.plot.threshold = data.threshold;
+            abrs.plot.levels = spl';
             file_check = dir(sprintf('*%s_v*.mat',filename2));
             [~,c] = size({file_check.name});
             if ~isempty(file_check)
@@ -134,11 +129,11 @@ if ~isempty(filename) && ~isempty(abr_FIG.parm_txt(9).String) % Replace file con
                     filename3 = strcat(filename2, '_v', file_num);
                     file_num = file_num + 1;
                 end
-                filename_out = [filename3 '_' today_date];
+                filename_out = filename3;
                 save(filename_out,'abrs');
-                filename_out = [filename3 '_' today_date];
+                filename_out = filename3;
             elseif ~exist(strcat(filename2, '.mat'),'file')
-                filename_out = [filename2 '_v1_' today_date];
+                filename_out = [filename2 '_v1'];
                 save(filename_out, 'abrs');
             end
             %HG ADDED 2/11/20
@@ -168,6 +163,8 @@ elseif ~isempty(filename) && isempty(abr_FIG.parm_txt(9).String) %Save new file 
     abrs.plot.levels = abrs.x(:,2);
     abrs.plot.peaks = ["p1" "n1" "p2" "n2" "p3" "n3" "p4" "n4" "p5" "n5"];
     abrs.plot.freq = abrs.x(1,1);
+    abrs.plot.threshold = data.threshold;
+    abrs.plot.levels = spl';
     file_check = dir(sprintf('*%s_v*.mat',filename2));
     [~,c] = size({file_check.name});
     if ~isempty(file_check)
@@ -177,11 +174,11 @@ elseif ~isempty(filename) && isempty(abr_FIG.parm_txt(9).String) %Save new file 
             filename3 = strcat(filename2, '_v', file_num);
             file_num = file_num + 1;
         end
-        filename_out = [filename3 '_' today_date];
+        filename_out = filename3;
         save(filename_out,'abrs');
-        filename_out = [filename3 '_' today_date];
+        filename_out = filename3;
     elseif ~exist(strcat(filename2, '.mat'),'file')
-        filename_out = [filename2 '_v1_' today_date];
+        filename_out = [filename2 '_v1'];
         save(filename_out, 'abrs');
     end
     %HG ADDED 2/11/20
@@ -209,12 +206,13 @@ else    %Save first file if no prior files exist
     abrs.plot.levels = abrs.x(:,2);
     abrs.plot.peaks = ["p1" "n1" "p2" "n2" "p3" "n3" "p4" "n4" "p5" "n5"];
     abrs.plot.freq = abrs.x(1,1);
-    filename_out = [filename2 '_v1_' today_date];
+    abrs.plot.threshold = data.threshold;
+    abrs.plot.levels = spl';
+    filename_out = [filename2 '_v1'];
     waitbar(0.5,prompt_peak_save);
     pause(.5);
     close;
     save(filename_out, 'abrs');
 end
-saved_prompt = sprintf('\nFiles Saved!\n\nFilename: %s\n\nFolder: %s\n',filename_out,currChinDir);
-saved_box = msgbox(saved_prompt); set(get(get(saved_box, 'CurrentAxes'), 'title'), 'Interpreter', 'none'); movegui(saved_box,'center');
+uiwait(msgbox(sprintf('\nFilename: %s\n\nDirectory: %s',filename_out,abr_out_dir),'ABR - PEAKS SAVED','modal'));
 clear abrs;

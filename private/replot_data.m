@@ -1,6 +1,6 @@
 function replot_data
 
-global 	abr_out_dir freq replot animal abr_Stimuli q_fldr check_files type id replot_check command_str exitwhile abr_FIG
+global 	abr_out_dir freq replot animal abr_Stimuli q_fldr check_files type id replot_check command_str exitwhile abr_FIG ChinCondition ChinFile
 
 
 q_fldr = strcat('Q', num2str(animal));
@@ -9,7 +9,7 @@ q_fldr = strcat('Q', num2str(animal));
 % elseif strcmp('post',regexp(abr_Stimuli.dir,'post','match')) == 1
 %     type = 'post';
 % end
-ChinDir = [abr_out_dir,'/', q_fldr];
+ChinDir = abr_out_dir;
 
 if isdir(ChinDir)
     cd(ChinDir)
@@ -17,7 +17,12 @@ else
     mkdir(ChinDir);
     cd(ChinDir)
 end
-files = dir(fullfile(ChinDir, sprintf('*%d*.mat',freq)));
+
+if freq~=0
+    files = dir(sprintf('*Q%s_%s_%s_%dHz*.mat',num2str(animal),ChinCondition,ChinFile,freq));
+else
+    files = dir(sprintf('*Q%s_%s_%s_click*.mat',num2str(animal),ChinCondition,ChinFile));
+end
 files = files(find((strncmp('.',{files.name},1)==0))); % Only files which are not '.' nor '..'
 str = {files.name};
 if ~isempty(str)
@@ -31,14 +36,20 @@ if ~isempty(str)
 else 
     selection = [];
     ok = [];
+    if freq~=0
+        f = freq/1000;
+        uiwait(warndlg(sprintf('No Previous Peak Files Found For %.1f kHz',f)));
+    else
+        f = 'Click';
+        uiwait(warndlg(sprintf('No Previous Peak Files Found For %s',f)));
+
+    end
 end
 if isempty(selection)
-    uiwait(warndlg(sprintf('No Previous Peak Files Found For %.1f kHz',freq/1000)));
-    replot = [];
+     replot = [];
 else
     replotfile = str{selection};
     replot = load(replotfile, 'abrs');
-
     sel_file = files(selection).name;
     idx = strfind(sel_file,'Hz');
     sel_file = sel_file(idx-4:idx-1);
